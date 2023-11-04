@@ -1,7 +1,2 @@
-require "user.options"
-require "user.keymaps"
-require "user.plugins"
-require "user.colorscheme"
-require "user.toggleterm"
-require "user.bufferline"
-require "user.nvim-tree"
+require("johan.core")
+require("johan.lazy")

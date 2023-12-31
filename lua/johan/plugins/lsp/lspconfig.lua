@@ -27,6 +27,7 @@ return {
 
             opts.desc = "Show LSP definitions"
             keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts) -- show lsp definitions
+            -- keymap.set("n", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", opts)
 
             opts.desc = "Show LSP implementations"
             keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts) -- show lsp implementations
@@ -69,6 +70,19 @@ return {
             local hl = "DiagnosticSign" .. type
             vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
         end
+
+        -- configure golang server
+        lspconfig["gopls"].setup({
+            settings = {
+                gopls = {
+                    analyses = {
+                        unusedparams = true,
+                    },
+                    staticcheck = true,
+                    gofumpt = true,
+                },
+            },
+        })
 
         -- configure html server
         lspconfig["html"].setup({

@@ -73,15 +73,8 @@ return {
 
         -- configure golang server
         lspconfig["gopls"].setup({
-            settings = {
-                gopls = {
-                    analyses = {
-                        unusedparams = true,
-                    },
-                    staticcheck = true,
-                    gofumpt = true,
-                },
-            },
+            on_attach = on_attach,
+            capabilities = capabilities,
         })
 
         -- configure html server

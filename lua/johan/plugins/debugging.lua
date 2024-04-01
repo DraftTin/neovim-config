@@ -7,11 +7,13 @@ return {
         "theHamsta/nvim-dap-virtual-text",
     },
     config = function()
-        local dap, dapui, dapgo = require("dap"), require("dapui"), require("dap-go")
+        local dap, dapui, dapvt, dapgo =
+            require("dap"), require("dapui"), require("nvim-dap-virtual-text"), require("dap-go")
         dapui.setup()
         dapgo.setup()
-        require("nvim-dap-virtual-text").setup()
+        dapvt.setup()
 
+        vim.fn.sign_define("DapBreakpoint", { text = "🛑", texthl = "", linehl = "", numhl = "" })
         dap.listeners.before.attach.dapui_config = function()
             dapui.open()
         end

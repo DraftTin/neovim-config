@@ -39,5 +39,12 @@ keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer
 keymap.set("n", "<Tab>", function () vim.cmd("bnext") end, {desc = "move to the next file in the buffer"})
 keymap.set("n", "<S-Tab>", function () vim.cmd("bprev") end, {desc = "move to the previous file in the buffer"})
 
+-- select all content
 keymap.set("n", "<leader>aa", "ggVG", { desc = "Select all content in the file" })
+vim.api.nvim_set_keymap("n", "gj", "gj", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "gk", "gk", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "gh", "g0", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "gl", "g$", { noremap = true, silent = true })
+
+
 

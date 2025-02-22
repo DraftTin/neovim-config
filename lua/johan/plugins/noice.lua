@@ -33,6 +33,12 @@ return {
                     lsp_doc_border = false, -- add a border to hover docs and signature help
                 },
             })
+            require("notify").setup({
+                background_colour = "#1e1e1e",
+                timeout = 3000,
+                fps = 30,
+                stages = "fade",  
+            })
         end,
     },
 }

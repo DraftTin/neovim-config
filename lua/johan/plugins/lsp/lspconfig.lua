@@ -163,5 +163,30 @@ return {
                 },
             },
         })
+
+        -- configue rust server
+        lspconfig["rust_analyzer"].setup({
+            on_attach = on_attach,
+            settings = {
+                cargo = {
+                    allFeatures = true, -- Enable all Cargo features
+                    loadOutDirsFromCheck = true,
+                },
+                -- checkOnSave = {
+                --     command = "clippy", -- Use Clippy instead of just check
+                -- },
+                procMacro = {
+                    enable = true, -- Enable procedural macro support
+                },
+                -- inlayHints = {
+                --     typeHints = true,
+                --     parameterHints = true,
+                -- },
+                -- diagnostics = {
+                --     enable = true,
+                --     disabled = { "unresolved-proc-macro" }, -- Silence annoying macro errors
+                -- },
+            },
+        })
     end,
 }

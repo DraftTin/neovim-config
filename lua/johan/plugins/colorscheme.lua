@@ -11,10 +11,12 @@ return {
     --     },
     -- },
     {
-        "catppuccin/nvim", name = "mocha", priority = 1000,
-        config = function ()
+        "catppuccin/nvim",
+        name = "catppuccin",
+        priority = 1000,
+        config = function()
             require("catppuccin").setup({
-                flavour = "auto", -- latte, frappe, macchiato, mocha
+                flavour = "latte", -- latte, frappe, macchiato, mocha
                 background = { -- :h background
                     light = "latte",
                     dark = "mocha",
@@ -59,12 +61,11 @@ return {
                         indentscope_color = "",
                     },
                     -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
-            },
-    })
+                },
+            })
 
             -- setup must be called before loading
-            vim.cmd.colorscheme "catppuccin"
-        end
-
+            vim.cmd.colorscheme("catppuccin")
+        end,
     },
 }

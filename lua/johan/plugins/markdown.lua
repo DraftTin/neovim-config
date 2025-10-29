@@ -14,10 +14,11 @@ return {
                     name = "personal",
                     path = "/Users/ningyuheng/Library/Mobile Documents/com~apple~CloudDocs/ObsidianVault",
                 },
-                -- {
-                --   name = "work",
-                --   path = "~/vaults/work",
-                -- },
+            },
+            templates = {
+                folder = "templates-folder",
+                date_format = "%Y-%m-%d-%a",
+                time_format = "%H:%M",
             },
             ui = { enable = false },
         },

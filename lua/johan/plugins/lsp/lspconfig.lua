@@ -6,187 +6,180 @@ return {
         { "antosha417/nvim-lsp-file-operations", config = true },
     },
     config = function()
-        -- import lspconfig plugin
-        local lspconfig = require("lspconfig")
-
-        -- import cmp-nvim-lsp plugin
+        -- import cmp-nvim-lsp plugin (for capabilities)
         local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
-        local keymap = vim.keymap -- for conciseness
-
+        local keymap = vim.keymap
         local opts = { noremap = true, silent = true }
+
         local on_attach = function(client, bufnr)
             opts.buffer = bufnr
 
-            -- set keybinds
+            -- keybinds (unchanged)
             opts.desc = "Show LSP references"
-            keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts) -- show definition, references
+            keymap.set("n", "gR", "<cmd>Telescope lsp_references<CR>", opts)
 
             opts.desc = "Go to declaration"
-            keymap.set("n", "gD", vim.lsp.buf.declaration, opts) -- go to declaration
+            keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
 
             opts.desc = "Show LSP definitions"
-            keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts) -- show lsp definitions
+            keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
 
             opts.desc = "Show LSP implementations"
-            keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts) -- show lsp implementations
+            keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
 
             opts.desc = "Show LSP type definitions"
-            keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
+            keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts)
 
             opts.desc = "See available code actions"
-            keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts) -- see available code actions, in visual mode will apply to selection
+            keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
 
             opts.desc = "Smart rename"
-            keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts) -- smart rename
+            keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 
             opts.desc = "Show buffer diagnostics"
-            keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts) -- show  diagnostics for file
+            keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts)
 
             opts.desc = "Show line diagnostics"
-            keymap.set("n", "<leader>sd", vim.diagnostic.open_float, opts) -- show diagnostics for line
+            keymap.set("n", "<leader>sd", vim.diagnostic.open_float, opts)
 
             opts.desc = "Go to previous diagnostic"
-            keymap.set("n", "[d", vim.diagnostic.goto_prev, opts) -- jump to previous diagnostic in buffer
+            keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
 
             opts.desc = "Go to next diagnostic"
-            keymap.set("n", "]d", vim.diagnostic.goto_next, opts) -- jump to next diagnostic in buffer
+            keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 
-            opts.desc = "Show documentation for what is under cursor"
-            keymap.set("n", "K", vim.lsp.buf.hover, opts) -- show documentation for what is under cursor
+            opts.desc = "Show documentation under cursor"
+            keymap.set("n", "K", vim.lsp.buf.hover, opts)
 
             opts.desc = "Restart LSP"
-            keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts) -- mapping to restart lsp if necessary
+            keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
         end
 
-        -- used to enable autocompletion (assign to every lsp server config)
+        -- capabilities for autocompletion
         local capabilities = cmp_nvim_lsp.default_capabilities()
 
-        -- Change the Diagnostic symbols in the sign column (gutter)
-        -- (not in youtube nvim video)
-        local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
-        for type, icon in pairs(signs) do
-            local hl = "DiagnosticSign" .. type
-            vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-        end
-
-        -- configure golang server
-        lspconfig["gopls"].setup({
-            on_attach = on_attach,
-            capabilities = capabilities,
+        -- diagnostic signs (unchanged)
+        vim.diagnostic.config({
+            signs = {
+                text = {
+                    [vim.diagnostic.severity.ERROR] = " ",
+                    [vim.diagnostic.severity.WARN] = " ",
+                    [vim.diagnostic.severity.HINT] = "󰠠 ",
+                    [vim.diagnostic.severity.INFO] = " ",
+                },
+            },
+            virtual_text = { prefix = "●" },
+            float = { border = "rounded" },
+            severity_sort = true,
         })
 
-        -- configure html server
-        lspconfig["html"].setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-        })
+        -- per-server configs (what used to be lspconfig[server].setup{...})
+        local servers = {
+            gopls = {
+                on_attach = on_attach,
+                capabilities = capabilities,
+            },
+            html = {
+                on_attach = on_attach,
+                capabilities = capabilities,
+            },
+            ts_ls = {
+                on_attach = on_attach,
+                capabilities = capabilities,
+            },
+            cssls = {
+                on_attach = on_attach,
+                capabilities = capabilities,
+            },
+            tailwindcss = {
+                on_attach = on_attach,
+                capabilities = capabilities,
+            },
+            svelte = {
+                on_attach = function(client, bufnr)
+                    on_attach(client, bufnr)
+                    vim.api.nvim_create_autocmd("BufWritePost", {
+                        pattern = { "*.js", "*.ts" },
+                        callback = function(ctx)
+                            if client.name == "svelte" then
+                                client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.file })
+                            end
+                        end,
+                    })
+                end,
+                capabilities = capabilities,
+            },
+            prismals = {
+                on_attach = on_attach,
+                capabilities = capabilities,
+            },
+            graphql = {
+                on_attach = on_attach,
+                capabilities = capabilities,
+                filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
+            },
+            emmet_ls = {
+                on_attach = on_attach,
+                capabilities = capabilities,
+                filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
+            },
+            pyright = {
+                on_attach = on_attach,
+                capabilities = capabilities,
+                -- make sure pyright has a root (so it loads settings)
+                -- root_dir = function(fname)
+                --     return vim.fs.root(fname, { "pyproject.toml", "setup.cfg", "setup.py", "requirements.txt", ".git" })
+                --         or vim.fs.dirname(fname)
+                -- end,
+                settings = {
+                    python = {
+                        -- either set pythonPath directly:
+                        pythonPath = "/Users/ningyuheng/.pyenv/versions/neovim/bin/python",
 
-        -- configure typescript server with plugin
-        lspconfig["ts_ls"].setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-        })
+                        -- optionally also give venv info so it can auto-detect:
+                        venvPath = "/Users/ningyuheng/.pyenv/versions",
+                        venv = "neovim",
 
-        -- configure css server
-        lspconfig["cssls"].setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-        })
-
-        -- configure tailwindcss server
-        lspconfig["tailwindcss"].setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-        })
-
-        -- configure svelte server
-        lspconfig["svelte"].setup({
-            capabilities = capabilities,
-            on_attach = function(client, bufnr)
-                on_attach(client, bufnr)
-
-                vim.api.nvim_create_autocmd("BufWritePost", {
-                    pattern = { "*.js", "*.ts" },
-                    callback = function(ctx)
-                        if client.name == "svelte" then
-                            client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.file })
-                        end
-                    end,
-                })
-            end,
-        })
-
-        -- configure prisma orm server
-        lspconfig["prismals"].setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-        })
-
-        -- configure graphql language server
-        lspconfig["graphql"].setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-            filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
-        })
-
-        -- configure emmet language server
-        lspconfig["emmet_ls"].setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-            filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
-        })
-
-        -- configure python server
-        lspconfig["pyright"].setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-        })
-
-        -- configure lua server (with special settings)
-        lspconfig["lua_ls"].setup({
-            capabilities = capabilities,
-            on_attach = on_attach,
-            settings = { -- custom settings for lua
-                Lua = {
-                    -- make the language server recognize "vim" global
-                    diagnostics = {
-                        globals = { "vim" },
-                    },
-                    workspace = {
-                        -- make language server aware of runtime files
-                        library = {
-                            [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                            [vim.fn.stdpath("config") .. "/lua"] = true,
+                        analysis = {
+                            autoSearchPaths = true,
+                            diagnosticMode = "openFilesOnly",
+                            useLibraryCodeForTypes = true,
                         },
                     },
                 },
             },
-        })
-
-        -- configue rust server
-        lspconfig["rust_analyzer"].setup({
-            on_attach = on_attach,
-            settings = {
-                cargo = {
-                    allFeatures = true, -- Enable all Cargo features
-                    loadOutDirsFromCheck = true,
+            lua_ls = {
+                on_attach = on_attach,
+                capabilities = capabilities,
+                settings = {
+                    Lua = {
+                        diagnostics = { globals = { "vim" } },
+                        workspace = {
+                            library = {
+                                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                                [vim.fn.stdpath("config") .. "/lua"] = true,
+                            },
+                        },
+                    },
                 },
-                -- checkOnSave = {
-                --     command = "clippy", -- Use Clippy instead of just check
-                -- },
-                procMacro = {
-                    enable = true, -- Enable procedural macro support
-                },
-                -- inlayHints = {
-                --     typeHints = true,
-                --     parameterHints = true,
-                -- },
-                -- diagnostics = {
-                --     enable = true,
-                --     disabled = { "unresolved-proc-macro" }, -- Silence annoying macro errors
-                -- },
             },
-        })
+            rust_analyzer = {
+                on_attach = on_attach,
+                settings = {
+                    cargo = {
+                        allFeatures = true,
+                        loadOutDirsFromCheck = true,
+                    },
+                    procMacro = { enable = true },
+                },
+            },
+        }
+
+        -- register and enable all servers via Neovim 0.11 API
+        for name, cfg in pairs(servers) do
+            vim.lsp.config(name, cfg)
+        end
+        vim.lsp.enable(vim.tbl_keys(servers))
     end,
 }

@@ -11,6 +11,10 @@ return {
                     dark = "macchiato",
                 },
                 transparent_background = true, -- disables setting the background color.
+                float = {
+                    transparent = true, -- enable transparent floating windows
+                    solid = false, -- use solid styling for floating windows, see |winborder|
+                },
                 show_end_of_buffer = false, -- shows the '~' characters after the end of buffers
                 term_colors = false, -- sets terminal colors (e.g. `g:terminal_color_0`)
                 dim_inactve = {
@@ -37,7 +41,20 @@ return {
                     -- miscs = {}, -- Uncomment to turn off hard-coded styles
                 },
                 color_overrides = {},
-                custom_highlights = {},
+                custom_highlights = function(c)
+                    return {
+                        -- make non-current line numbers brighter
+                        LineNr = { fg = c.overlay1 }, -- try overlay2 or subtext1 if you want even brighter
+                        LineNrAbove = { fg = c.overlay1 },
+                        LineNrBelow = { fg = c.overlay1 },
+
+                        -- make the current line number pop
+                        CursorLineNr = { fg = c.peach, bold = true },
+
+                        -- optional: keep cursorline subtle when using transparency
+                        CursorLine = { bg = "NONE" },
+                    }
+                end,
                 default_integrations = true,
                 integrations = {
                     cmp = true,
@@ -54,7 +71,7 @@ return {
             })
 
             -- setup must be called before loading
-            -- vim.cmd.colorscheme("catppuccin")
+            vim.cmd.colorscheme("catppuccin")
         end,
     },
     {
@@ -71,7 +88,7 @@ return {
                     strings = true,
                     emphasis = true,
                     comments = true,
-                    operators = false,
+                    operators = true,
                     folds = true,
                 },
                 strikethrough = true,
@@ -85,7 +102,7 @@ return {
                 dim_inactive = false,
                 transparent_mode = true,
             })
-            vim.cmd.colorscheme("gruvbox")
+            -- vim.cmd.colorscheme("gruvbox")
         end,
     },
 }

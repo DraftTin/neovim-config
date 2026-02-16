@@ -1,64 +1,66 @@
 return {
     {
         "nvim-treesitter/nvim-treesitter",
-        event = { "BufReadPre", "BufNewFile" },
+        branch = "main",
+        lazy = false,
         build = ":TSUpdate",
         dependencies = {
-            "nvim-treesitter/nvim-treesitter-textobjects",
             "windwp/nvim-ts-autotag",
         },
         config = function()
-            -- import nvim-treesitter plugin
-            local treesitter = require("nvim-treesitter.configs")
+            require("nvim-treesitter").setup({
+                install_dir = vim.fn.stdpath("data") .. "/site",
+            })
 
-            -- configure treesitter
-            treesitter.setup({ -- enable syntax highlighting
-                highlight = {
-                    enable = true,
+            -- install parsers (replaces ensure_installed)
+            require("nvim-treesitter").install({
+                "json",
+                "javascript",
+                "typescript",
+                "tsx",
+                "yaml",
+                "html",
+                "css",
+                "prisma",
+                "markdown",
+                "markdown_inline",
+                "svelte",
+                "graphql",
+                "bash",
+                "lua",
+                "vim",
+                "dockerfile",
+                "gitignore",
+                "query",
+                "go",
+                "python",
+                "rust",
+            })
+
+            -- enable highlighting (replaces highlight = { enable = true })
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = {
+                    "json", "javascript", "typescript", "typescriptreact", "javascriptreact",
+                    "tsx", "yaml", "html", "css", "prisma", "markdown", "svelte", "graphql",
+                    "bash", "sh", "lua", "vim", "dockerfile", "gitignore", "query", "go",
+                    "python", "rust", "c", "cpp", "umple",
                 },
-                -- enable indentation
-                indent = { enable = true },
-                auto_install = false, -- automatically install missing parser
-                -- enable autotagging (w/ nvim-ts-autotag plugin)
-                autotag = {
-                    enable = true,
+                callback = function()
+                    pcall(vim.treesitter.start)
+                end,
+            })
+
+            -- enable indentation (experimental, replaces indent = { enable = true })
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = {
+                    "json", "javascript", "typescript", "typescriptreact", "javascriptreact",
+                    "tsx", "yaml", "html", "css", "prisma", "markdown", "svelte", "graphql",
+                    "bash", "sh", "lua", "vim", "dockerfile", "gitignore", "query", "go",
+                    "python", "rust", "c", "cpp", "umple",
                 },
-                -- ensure these language parsers are installed
-                ensure_installed = {
-                    "json",
-                    "javascript",
-                    "typescript",
-                    "tsx",
-                    "yaml",
-                    "html",
-                    "css",
-                    "prisma",
-                    "markdown",
-                    "markdown_inline",
-                    "svelte",
-                    "graphql",
-                    "bash",
-                    "lua",
-                    "vim",
-                    "dockerfile",
-                    "gitignore",
-                    "query",
-                    "go",
-                },
-                incremental_selection = {
-                    enable = true,
-                    keymaps = {
-                        init_selection = "<C-space>",
-                        node_incremental = "<C-space>",
-                        scope_incremental = false,
-                        node_decremental = "<bs>",
-                    },
-                },
-                -- enable nvim-ts-context-commentstring plugin for commenting tsx and jsx
-                context_commentstring = {
-                    enable = true,
-                    enable_autocmd = false,
-                },
+                callback = function()
+                    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+                end,
             })
         end,
     },

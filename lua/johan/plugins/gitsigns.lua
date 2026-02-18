@@ -10,11 +10,20 @@ return {
         map("n", "[h", gs.prev_hunk, { desc = "Prev hunk" })
 
         -- Preview & diff
-        map("n", "<leader>hp", gs.preview_hunk, { desc = "Preview hunk" })
+
         map("n", "<leader>hd", gs.diffthis, { desc = "Diff against index" })
         map("n", "<leader>hD", function()
             gs.diffthis("~1")
         end, { desc = "Diff against last commit" })
+
+        -- Browse buffer hunks in fzf
+        map("n", "<leader>hl", function()
+            gs.setloclist()
+            vim.schedule(function()
+                vim.cmd("lclose")
+                require("fzf-lua").loclist()
+            end)
+        end, { desc = "Browse buffer hunks in fzf" })
 
         -- Blame
         map("n", "<leader>hb", gs.blame_line, { desc = "Blame line" })

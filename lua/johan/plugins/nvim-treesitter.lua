@@ -71,41 +71,6 @@ return {
                     pcall(vim.treesitter.start)
                 end,
             })
-
-            -- enable indentation (experimental, replaces indent = { enable = true })
-            vim.api.nvim_create_autocmd("FileType", {
-                pattern = {
-                    "json",
-                    "javascript",
-                    "typescript",
-                    "typescriptreact",
-                    "javascriptreact",
-                    "tsx",
-                    "yaml",
-                    "html",
-                    "css",
-                    "prisma",
-                    "markdown",
-                    "svelte",
-                    "graphql",
-                    "bash",
-                    "sh",
-                    "lua",
-                    "vim",
-                    "dockerfile",
-                    "gitignore",
-                    "query",
-                    "go",
-                    "python",
-                    "rust",
-                    "c",
-                    "cpp",
-                    "umple",
-                },
-                callback = function()
-                    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-                end,
-            })
         end,
     },
 }

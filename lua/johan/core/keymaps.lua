@@ -27,7 +27,7 @@ keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" }
 keymap.set(
     "n",
     "<leader>sg",
-    "<C-w>v<cmd>Telescope lsp_definitions<CR>",
+    "<C-w>v<cmd>FzfLua lsp_definitions<CR>",
     { desc = "Split window vertically and go to the definitions" }
 )
 
@@ -45,3 +45,29 @@ vim.api.nvim_set_keymap("n", "gj", "gj", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "gk", "gk", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "gh", "g0", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "gl", "g$", { noremap = true, silent = true })
+
+---------------------
+-- LSP Keymaps (applied to all LSP clients, including umple)
+---------------------
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(ev)
+        local buf = ev.buf
+        local function opts(desc)
+            return { buffer = buf, noremap = true, silent = true, desc = desc }
+        end
+
+        keymap.set("n", "gR", "<cmd>FzfLua lsp_references<CR>", opts("Show LSP references"))
+        keymap.set("n", "gD", vim.lsp.buf.declaration, opts("Go to declaration"))
+        keymap.set("n", "gd", "<cmd>FzfLua lsp_definitions<CR>", opts("Show LSP definitions"))
+        keymap.set("n", "gi", "<cmd>FzfLua lsp_implementations<CR>", opts("Show LSP implementations"))
+        keymap.set("n", "gt", "<cmd>FzfLua lsp_typedefs<CR>", opts("Show LSP type definitions"))
+        keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts("See available code actions"))
+        keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts("Smart rename"))
+        keymap.set("n", "<leader>D", "<cmd>FzfLua diagnostics_document<CR>", opts("Show buffer diagnostics"))
+        keymap.set("n", "<leader>sd", vim.diagnostic.open_float, opts("Show line diagnostics"))
+        keymap.set("n", "[d", vim.diagnostic.goto_prev, opts("Go to previous diagnostic"))
+        keymap.set("n", "]d", vim.diagnostic.goto_next, opts("Go to next diagnostic"))
+        keymap.set("n", "K", vim.lsp.buf.hover, opts("Show documentation under cursor"))
+        keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts("Restart LSP"))
+    end,
+})

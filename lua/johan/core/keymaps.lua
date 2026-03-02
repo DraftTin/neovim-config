@@ -41,6 +41,12 @@ keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer
 
 -- select all content
 keymap.set("n", "<leader>aa", "ggVG", { desc = "Select all content in the file" })
+
+-- copy current file path to clipboard
+keymap.set("n", "<leader>cp", function()
+    vim.fn.setreg("+", vim.fn.expand("%:p"))
+    vim.notify("Copied: " .. vim.fn.expand("%:p"))
+end, { desc = "Copy full file path to clipboard" })
 vim.api.nvim_set_keymap("n", "gj", "gj", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "gk", "gk", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "gh", "g0", { noremap = true, silent = true })
@@ -68,6 +74,5 @@ vim.api.nvim_create_autocmd("LspAttach", {
         keymap.set("n", "[d", vim.diagnostic.goto_prev, opts("Go to previous diagnostic"))
         keymap.set("n", "]d", vim.diagnostic.goto_next, opts("Go to next diagnostic"))
         keymap.set("n", "K", vim.lsp.buf.hover, opts("Show documentation under cursor"))
-        keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts("Restart LSP"))
     end,
 })

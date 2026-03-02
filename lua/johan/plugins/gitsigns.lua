@@ -11,6 +11,7 @@ return {
 
         -- Preview & diff
 
+        map("n", "<leader>hp", gs.preview_hunk, { desc = "Preview hunk" })
         map("n", "<leader>hd", gs.diffthis, { desc = "Diff against index" })
         map("n", "<leader>hD", function()
             gs.diffthis("~1")
